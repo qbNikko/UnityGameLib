@@ -1,0 +1,16 @@
+{
+    "name": "UnityGameLib.Test",
+    "rootNamespace": "UnityGameLib",
+    "references": [
+        "GUID:a89898a1a76eb464e85318268b36ed9e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
