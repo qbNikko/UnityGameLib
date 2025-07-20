@@ -1,6 +1,6 @@
 {
   "name": "com.qbnikko.unitygamelib",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "Набор решений для unity",
   "description": "Набор универсального функционала, для UNITY, который можно переиспользовать",
   "unity": "6000.1",
@@ -8,6 +8,7 @@
   "changelogUrl": "https://github.com/qbNikko/UnityGameLib/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/qbNikko/UnityGameLib/blob/main/LICENSE.md",
   "dependencies": {
+    "com.unity.splines": "2.8.1"
   },
   "author": {
     "name": "Николай Жульков",
