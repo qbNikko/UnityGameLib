@@ -6,6 +6,7 @@ namespace UnityGameLib.Component.Pool
     public class ObjectPoolManager<T> :IDisposable where T : class, IPooledObject
     {
         ObjectPool<T> _pool;
+        WeakReference<ObjectPool<T>> _weakRef;
         Action<IPooledObject> _releaseAction;
 
         public ObjectPoolManager(int maxPoolSize, int defaultPoolSize, bool sizeCheck, Func<T> onCreate)
@@ -17,7 +18,12 @@ namespace UnityGameLib.Component.Pool
                 i => OnDestroy(i),
                 sizeCheck, defaultPoolSize, maxPoolSize
             );
-            _releaseAction = (i) => _pool.Release((T)i);
+            _weakRef = new WeakReference<ObjectPool<T>>(_pool);
+            _releaseAction = (i) =>
+            {
+                if (_weakRef.TryGetTarget(out ObjectPool<T> pool)) pool.Release((T)i);
+                else ((T)i).Dispose();
+            };
         }
         
         public T Get()=>_pool.Get();
@@ -48,6 +54,8 @@ namespace UnityGameLib.Component.Pool
         public void Dispose()
         {
             _pool.Dispose();
+            _pool = null;
+            _weakRef.SetTarget(null);
         }
     }
 }
