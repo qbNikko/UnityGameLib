@@ -1,4 +1,5 @@
-﻿using UnityGameLib.Component;
+﻿#if UNITY_INCLUDE_TESTS 
+using UnityGameLib.Component;
 
 namespace UnityGameLib.Component.Pool
 {
@@ -27,3 +28,4 @@ namespace UnityGameLib.Component.Pool
         }
     }
 }
+#endif

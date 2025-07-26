@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -66,3 +67,4 @@ namespace UnityGameLib.Editor.Button
         protected abstract void InvokeMethod(IEnumerable<object> targets);
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 
 namespace UnityGameLib.Editor.Button
 {
@@ -7,3 +8,4 @@ namespace UnityGameLib.Editor.Button
         public static Dictionary<int, object> valueCache = new Dictionary<int, object>();
     }
 }
+#endif

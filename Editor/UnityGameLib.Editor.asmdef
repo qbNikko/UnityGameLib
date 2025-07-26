@@ -3,7 +3,8 @@
     "rootNamespace": "UnityGameLib",
     "references": [
         "GUID:a89898a1a76eb464e85318268b36ed9e",
-        "GUID:21b0c8d1703a94250bfac916590cea4f"
+        "GUID:21b0c8d1703a94250bfac916590cea4f",
+        "GUID:343deaaf83e0cee4ca978e7df0b80d21"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

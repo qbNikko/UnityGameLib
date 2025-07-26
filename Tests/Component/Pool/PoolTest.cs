@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿#if UNITY_INCLUDE_TESTS 
+using NUnit.Framework;
 
 namespace UnityGameLib.Component.Pool
 {
@@ -29,3 +30,4 @@ namespace UnityGameLib.Component.Pool
         
     }
 }
+#endif
