@@ -8,6 +8,14 @@ namespace UnityGameLib.Component.Bullet
         [SerializeField] private MixedBulletSpawner _bulletSpawner;
         [SerializeField] private BulletType _bulletType;
 
+        public MixedBulletSpawner BulletSpawner
+        {
+            get => _bulletSpawner;
+            set => _bulletSpawner = value;
+        }
+
+        public BulletType BulletType => _bulletType;
+
         public void Shoot()
         {
             Shoot(out var component);
