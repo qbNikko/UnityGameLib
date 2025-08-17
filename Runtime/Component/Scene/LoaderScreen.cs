@@ -19,7 +19,7 @@ namespace UnityGameLib.Component.Scene
             OnProcessingMessageEvent.Invoke("");
         }
 
-        public void SendMessage(string message)
+        public new void SendMessage(string message)
         {
             OnProcessingMessageEvent?.Invoke(message);
         }

@@ -18,7 +18,7 @@ namespace UnityGameLib
         // Update is called once per frame
         void Update()
         {
-            progressBar.transform.RotateAround(Vector3.up, 10*Time.deltaTime);
+            progressBar.transform.Rotate(Vector3.up, 10*Time.deltaTime);
         }
     }
 }

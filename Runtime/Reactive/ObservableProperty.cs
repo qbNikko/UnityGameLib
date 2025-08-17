@@ -29,7 +29,7 @@ namespace UnityGameLib.Reactive
                 return Empty;
             }
             if(!_observers.Add(observer)) return Empty;
-            return new Unsubscriber<T>(_observers, observer);
+            return new Unsubscriber(_observers, observer);
         }
         
         
@@ -41,7 +41,7 @@ namespace UnityGameLib.Reactive
         {
             public void Dispose(){}
         }
-        public class Unsubscriber<T> : IDisposable
+        public class Unsubscriber : IDisposable
         {
             private HashSet<IObserver<T>> _observers;
             private IObserver<T> _observer;

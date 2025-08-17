@@ -16,162 +16,53 @@ namespace UnityGameLib.Collection
     [System.Serializable()]
     public abstract class SerializableDictionaryBase<TKey, TValue> : DrawableDictionary, IDictionary<TKey, TValue>, UnityEngine.ISerializationCallbackReceiver
     {
-
-        #region Fields
-
         [System.NonSerialized()]
         private Dictionary<TKey, TValue> _dict;
         [System.NonSerialized()]
         private IEqualityComparer<TKey> _comparer;
 
-        #endregion
-
-        #region CONSTRUCTOR
 
         public SerializableDictionaryBase()
         {
-
+            _dict = new Dictionary<TKey, TValue>();
         }
-
         public SerializableDictionaryBase(IEqualityComparer<TKey> comparer)
         {
-            _comparer = comparer;
+            _dict = new Dictionary<TKey, TValue>(_comparer);
         }
 
-        #endregion
-
-        #region Properties
-
-        public IEqualityComparer<TKey> Comparer
-        {
-            get { return _comparer; }
-        }
-
-        #endregion
-
-        #region IDictionary Interface
-
-        public int Count
-        {
-            get { return (_dict != null) ? _dict.Count : 0; }
-        }
-
-        public void Add(TKey key, TValue value)
-        {
-            if (_dict == null) _dict = new Dictionary<TKey, TValue>(_comparer);
-            _dict.Add(key, value);
-        }
-
-        public bool ContainsKey(TKey key)
-        {
-            if (_dict == null) return false;
-            return _dict.ContainsKey(key);
-        }
-
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                if (_dict == null) _dict = new Dictionary<TKey, TValue>(_comparer);
-                return _dict.Keys;
-            }
-        }
-
-        public bool Remove(TKey key)
-        {
-            if (_dict == null) return false;
-            return _dict.Remove(key);
-        }
-
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            if (_dict == null)
-            {
-                value = default(TValue);
-                return false;
-            }
-            return _dict.TryGetValue(key, out value);
-        }
-
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                if (_dict == null) _dict = new Dictionary<TKey, TValue>(_comparer);
-                return _dict.Values;
-            }
-        }
+        public IEqualityComparer<TKey> Comparer => _comparer;
+        
+        public int Count => _dict.Count;
+        public void Add(TKey key, TValue value) => _dict.Add(key, value);
+        public bool ContainsKey(TKey key) => _dict.ContainsKey(key);
+        public ICollection<TKey> Keys=> _dict.Keys;
+        public bool Remove(TKey key) => _dict.Remove(key);
+        public bool TryGetValue(TKey key, out TValue value) => _dict.TryGetValue(key, out value);
+        public ICollection<TValue> Values => _dict.Values;
 
         public TValue this[TKey key]
         {
-            get
-            {
-                if (_dict == null) throw new KeyNotFoundException();
-                return _dict[key];
-            }
+            get=> _dict[key];
             set
             {
-                if (_dict == null) _dict = new Dictionary<TKey, TValue>(_comparer);
                 _dict[key] = value;
             }
         }
-
-        public void Clear()
-        {
-            if (_dict != null) _dict.Clear();
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            if (_dict == null) _dict = new Dictionary<TKey, TValue>(_comparer);
-            (_dict as ICollection<KeyValuePair<TKey, TValue>>).Add(item);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            if (_dict == null) return false;
-            return (_dict as ICollection<KeyValuePair<TKey, TValue>>).Contains(item);
-        }
-
+        public void Clear() => _dict.Clear();
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)=>_dict.Contains(item);
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            if (_dict == null) return;
             (_dict as ICollection<KeyValuePair<TKey, TValue>>).CopyTo(array, arrayIndex);
         }
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item) => _dict.Remove(item.Key);
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
+        public Dictionary<TKey, TValue>.Enumerator GetEnumerator() => _dict.GetEnumerator();
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => _dict.GetEnumerator();
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator() => _dict.GetEnumerator();
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            if (_dict == null) return false;
-            return (_dict as ICollection<KeyValuePair<TKey, TValue>>).Remove(item);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get { return false; }
-        }
-
-        public Dictionary<TKey, TValue>.Enumerator GetEnumerator()
-        {
-            if (_dict == null) return default(Dictionary<TKey, TValue>.Enumerator);
-            return _dict.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            if (_dict == null) return Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
-            return _dict.GetEnumerator();
-        }
-
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
-        {
-            if (_dict == null) return Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
-            return _dict.GetEnumerator();
-        }
-
-        #endregion
-
-        #region ISerializationCallbackReceiver
-
+        
         [UnityEngine.SerializeField()]
         private TKey[] _keys;
         [UnityEngine.SerializeField()]
@@ -191,14 +82,13 @@ namespace UnityGameLib.Collection
                         _dict[_keys[i]] = default(TValue);
                 }
             }
-
             _keys = null;
             _values = null;
         }
 
         void UnityEngine.ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            if (_dict == null || _dict.Count == 0)
+            if (_dict.Count == 0)
             {
                 _keys = null;
                 _values = null;
@@ -218,13 +108,8 @@ namespace UnityGameLib.Collection
                 }
             }
         }
-
-        #endregion
-
     }
 
-#if UNITY_2021_1_OR_NEWER
     [System.Serializable]
     public class SerializableDictionary<TKey, TValue> : SerializableDictionaryBase<TKey, TValue> { }
-#endif
 }
