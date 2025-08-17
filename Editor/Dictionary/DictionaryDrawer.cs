@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -18,14 +18,13 @@ namespace UnityGameLib.Editor.Dictionary
         private SerializedProperty _prop_values;
         private object[] _existingKeys;
         private System.Type _keyType;
-        private bool _isFlaggingEnum;
 
         void Initialize(SerializedProperty property, GUIContent label, bool isdraw)
         {
             _currentLabel = label;
             _prop_keys = property.FindPropertyRelative(DrawableDictionary.PROP_KEYS);
             _prop_values = property.FindPropertyRelative(DrawableDictionary.PROP_VALUES);
-            _drawer = new ReorderableList(property.serializedObject, property);
+            _drawer = Cached.GetCachedReorderableList(_prop_keys);
             _drawer.drawHeaderCallback = _drawer_DrawHeader;
             _drawer.drawElementCallback = _drawer_DrawElement;
             _drawer.onAddCallback = _drawer_OnAdded;
@@ -40,8 +39,7 @@ namespace UnityGameLib.Editor.Dictionary
 
             _keyType = TypeUtils.GetTypeOfCollection(_prop_keys.GetPropertyValueType(true));
             bool isEnum = _keyType?.IsEnum ?? false;
-            _isFlaggingEnum = isEnum && _keyType.GetCustomAttribute<System.FlagsAttribute>() != null;
-            using (var hash = TempCollection.GetSet<object>())
+            using (CollectionPool.GetSet(out HashSet<object> tmp))
             {
                 for (int i = 0; i < _prop_keys.arraySize; i++)
                 {
@@ -49,22 +47,21 @@ namespace UnityGameLib.Editor.Dictionary
                     if (val != null)
                     {
                         if (isEnum) val = EnumUtils.ToEnumOfType(_keyType, val);
-                        hash.Add(val);
+                        tmp.Add(val);
                     }
                 }
-
-                _existingKeys = isEnum ? hash.Cast<System.Enum>().ToArray() : hash.ToArray();
+                _existingKeys = isEnum ? tmp.Cast<System.Enum>().ToArray() : tmp.ToArray();
             }
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             float h;
-            if (EditorHelper.AssertMultiObjectEditingNotSupportedHeight(property, label, out h)) return h;
+            if (EditorUtils.CheckEditingMultiObjectNotSupportedHeight(property, label, out h)) return h;
 
             try
             {
-                this.Initialize(property, label, false);
+                Initialize(property, label, false);
                 return _drawer.GetHeight();
             }
             finally
@@ -80,11 +77,11 @@ namespace UnityGameLib.Editor.Dictionary
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (EditorHelper.AssertMultiObjectEditingNotSupported(position, property, label)) return;
+            if (EditorUtils.CheckEditingMultiObjectNotSupported(position, property, label)) return;
 
             try
             {
-                this.Initialize(property, label, true);
+                Initialize(property, label, true);
                 _drawer.DoList(position);
             }
             finally
@@ -110,18 +107,9 @@ namespace UnityGameLib.Editor.Dictionary
 
             var r0 = new Rect(area.xMin, area.yMin, Mathf.FloorToInt(area.width * 0.3f) - 1, area.height);
             var r1 = new Rect(r0.xMax + 1, area.yMin, area.width - r0.width - 1, area.height);
-
-            if ((_keyType?.IsEnum ?? false) && !_isFlaggingEnum)
-            {
-                var val = prop_key.GetEnumValue(_keyType);
-                SPEditorGUI.EnumPopupExcluding(r0, val, _existingKeys.Cast<System.Enum>().Except(val).ToArray());
-            }
-            else
-            {
-                SPEditorGUI.PropertyField(r0, prop_key, GUIContent.none, false);
-            }
-
-            SPEditorGUI.PropertyField(r1, prop_values, GUIContent.none, false);
+            
+            EditorGUI.PropertyField(r0, prop_key, GUIContent.none);
+            EditorGUI.PropertyField(r1, prop_values, GUIContent.none);
         }
 
         private void _drawer_OnAdded(ReorderableList lst)
@@ -375,65 +363,6 @@ namespace UnityGameLib.Editor.Dictionary
                     break;
                 default:
                     throw new System.InvalidOperationException("Can not handle Type as key.");
-            }
-        }
-
-        private static void SetPropertyDefault(SerializedProperty prop)
-        {
-            if (prop == null) throw new System.ArgumentNullException("prop");
-
-            switch (prop.propertyType)
-            {
-                case SerializedPropertyType.Integer:
-                    prop.intValue = 0;
-                    break;
-                case SerializedPropertyType.Boolean:
-                    prop.boolValue = false;
-                    break;
-                case SerializedPropertyType.Float:
-                    prop.floatValue = 0f;
-                    break;
-                case SerializedPropertyType.String:
-                    prop.stringValue = string.Empty;
-                    break;
-                case SerializedPropertyType.Color:
-                    prop.colorValue = Color.black;
-                    break;
-                case SerializedPropertyType.ObjectReference:
-                    prop.objectReferenceValue = null;
-                    break;
-                case SerializedPropertyType.LayerMask:
-                    prop.intValue = -1;
-                    break;
-                case SerializedPropertyType.Enum:
-                    prop.enumValueIndex = 0;
-                    break;
-                case SerializedPropertyType.Vector2:
-                    prop.vector2Value = Vector2.zero;
-                    break;
-                case SerializedPropertyType.Vector3:
-                    prop.vector3Value = Vector3.zero;
-                    break;
-                case SerializedPropertyType.Vector4:
-                    prop.vector4Value = Vector4.zero;
-                    break;
-                case SerializedPropertyType.Rect:
-                    prop.rectValue = Rect.zero;
-                    break;
-                case SerializedPropertyType.ArraySize:
-                    prop.arraySize = 0;
-                    break;
-                case SerializedPropertyType.Character:
-                    prop.intValue = 0;
-                    break;
-                case SerializedPropertyType.AnimationCurve:
-                    prop.animationCurveValue = null;
-                    break;
-                case SerializedPropertyType.Bounds:
-                    prop.boundsValue = default(Bounds);
-                    break;
-                case SerializedPropertyType.Gradient:
-                    throw new System.InvalidOperationException("Can not handle Gradient types.");
             }
         }
     }

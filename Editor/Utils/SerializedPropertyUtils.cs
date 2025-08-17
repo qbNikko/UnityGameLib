@@ -250,5 +250,33 @@ namespace UnityGameLib.Editor.Utils
             }
             property.intValue = ConvertUtils.ToInt(value);
         }
+        
+        public static T GetEnumValue<T>(this SerializedProperty property) where T : struct, System.Enum
+        {
+            if (property == null) throw new ArgumentNullException("property");
+            try
+            {
+                return EnumUtils.ToEnum<T>(property.intValue);
+            }
+            catch
+            {
+                return default(T);
+            }
+        }
+        
+        public static Enum GetEnumValue(this SerializedProperty property, Type type)
+        {
+            if (property == null) throw new ArgumentNullException("property");
+            if (type == null) throw new ArgumentNullException("type");
+            if (!type.IsEnum) throw new ArgumentException("Type must be an enumerated type.");
+            try
+            {
+                return EnumUtils.ToEnumOfType(type, property.intValue);
+            }
+            catch
+            {
+                return Enum.GetValues(type).Cast<Enum>().First();
+            }
+        }
     }
 }

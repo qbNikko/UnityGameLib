@@ -98,16 +98,16 @@ namespace UnityGameLib.Editor.Utils
                     return property.animationCurveValue;
                 case SerializedPropertyType.Bounds:
                     return property.boundsValue;
-                case SerializedPropertyType.Generic:
-                case SerializedPropertyType.ManagedReference:
-                    return GetTargetObjectOfProperty(property);
+                // case SerializedPropertyType.Generic:
+                // case SerializedPropertyType.ManagedReference:
+                //     return GetTargetObjectOfProperty(property);
             }
             return null;
         }
 
-        public static T GetPropertyValue<T>(this SerializedProperty property, bool ignoreSpecialWrappers = false)
+        public static T GetPropertyValue<T>(this SerializedProperty property)
         {
-            var obj = GetPropertyValue(property, ignoreSpecialWrappers);
+            var obj = GetPropertyValue(property);
             if (obj is T) return (T)obj;
             var type = typeof(T);
             try

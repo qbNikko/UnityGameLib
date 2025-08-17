@@ -29,7 +29,7 @@ namespace UnityGameLib.Component.Scene
             DontDestroyOnLoad(gameObject);
         }
 
-        public async void LoadScene(string sceneName)
+        public void LoadScene(string sceneName)
         {
             StartCoroutine(LoadTargetScene(sceneName));
         }
