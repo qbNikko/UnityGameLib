@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UnityGameLib.Component.Pool
@@ -6,6 +7,7 @@ namespace UnityGameLib.Component.Pool
     public class MbPooledObject : MonoBehaviour, IPooledObject
     {
         private Action<IPooledObject> _realisePoolAction;
+        protected List<Action<IPooledObject>> _releaseActionSubscribers;
         
         public virtual void Reset()
         {
@@ -14,6 +16,8 @@ namespace UnityGameLib.Component.Pool
 
         public virtual void Release()
         {
+            _releaseActionSubscribers?.ForEach(a=>a.Invoke(this));
+            _releaseActionSubscribers?.Clear();
             gameObject.SetActive(false);
         }
 
@@ -34,6 +38,17 @@ namespace UnityGameLib.Component.Pool
         public void ReleaseInPool()
         {
             _realisePoolAction?.Invoke(this);
+        }
+
+        public void SubscribeOnRelease()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SubscribeOnRelease(Action<IPooledObject> action)
+        {
+            if (_releaseActionSubscribers == null) _releaseActionSubscribers = new List<Action<IPooledObject>>();
+            _releaseActionSubscribers.Add(action);
         }
     }
 }

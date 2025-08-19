@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace UnityGameLib.Component.Pool
 {
     public abstract class SimplePooledObject : IPooledObject
     {
         private Action<IPooledObject> _realisePoolAction;
+        protected List<Action<IPooledObject>> _releaseActionSubscribers;
         
         public virtual void Reset()
         {
@@ -12,6 +15,8 @@ namespace UnityGameLib.Component.Pool
 
         public virtual void Release()
         {
+            _releaseActionSubscribers?.ForEach(a=>a.Invoke(this));
+            _releaseActionSubscribers?.Clear();
         }
 
         public virtual void Dispose()
@@ -32,5 +37,10 @@ namespace UnityGameLib.Component.Pool
             _realisePoolAction?.Invoke(this);
         }
 
+        public void SubscribeOnRelease(Action<IPooledObject> action)
+        {
+            if (_releaseActionSubscribers == null) _releaseActionSubscribers = new List<Action<IPooledObject>>();
+            _releaseActionSubscribers.Add(action);
+        }
     }
 }

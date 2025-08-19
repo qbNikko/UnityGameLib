@@ -27,6 +27,8 @@ namespace UnityGameLib.Component.Pool
          * Возвращение объекта в пул
          */
         public void ReleaseInPool();
-        
+
+        public void SubscribeOnRelease(Action<IPooledObject> action);
+
     }
 }
