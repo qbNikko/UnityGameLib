@@ -40,11 +40,6 @@ namespace UnityGameLib.Component.Pool
             _realisePoolAction?.Invoke(this);
         }
 
-        public void SubscribeOnRelease()
-        {
-            throw new NotImplementedException();
-        }
-
         public void SubscribeOnRelease(Action<IPooledObject> action)
         {
             if (_releaseActionSubscribers == null) _releaseActionSubscribers = new List<Action<IPooledObject>>();
