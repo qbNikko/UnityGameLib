@@ -10,6 +10,15 @@ namespace UnityGameLib.Reactive
     {
         protected HashSet<IObserver<T>> _observers = new();
         private bool IsDisposed;
+
+        public void AllUnsubscribed()
+        {
+            foreach (var observer in _observers)
+            {
+                observer.OnCompleted();
+            }
+            _observers.Clear();
+        }
         
         public void Dispose()
         {
@@ -31,10 +40,6 @@ namespace UnityGameLib.Reactive
             if(!_observers.Add(observer)) return Empty;
             return new Unsubscriber(_observers, observer);
         }
-        
-        
-        
-        
         
         public static readonly IDisposable Empty = new EmptyDisposed();
         internal class EmptyDisposed : IDisposable
