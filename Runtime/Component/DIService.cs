@@ -24,7 +24,7 @@ namespace UnityGameLib.Component
             _disposableContainer.AddDisposable(CollectionPool.GetDictionary(out _multiDictionary));
         }
 
-        public static DIService Instance
+        private static DIService Instance
         {
             get
             {
@@ -33,7 +33,27 @@ namespace UnityGameLib.Component
             }
         }
 
-        public IDisposable RegisterSingleton<T>(T instance) where T:class
+        public static IDisposable RegisterSingleton<T>(T instance) where T : class
+        {
+            return Instance.RegisterSingleton_(instance);
+        }
+
+        public static IDisposable RegisterMulti<T>(T instance) where T : class
+        {
+            return Instance.RegisterMulti_(instance);
+        }
+
+        public static bool GetSingleton<T>(out T instance) where T : class
+        {
+            return Instance.GetSingleton_(out instance);
+        }
+        
+        public static bool GetAll<T>(out ReadOnlyCollection<T> instance) where T:class
+        {
+            return Instance.GetAll_(out instance);
+        }
+
+        public IDisposable RegisterSingleton_<T>(T instance) where T:class
         {
             Type type = typeof(T);
             if(_singletonDictionary.ContainsKey(type)) throw new Exception("Singleton "+type+"object already registered");
@@ -41,7 +61,7 @@ namespace UnityGameLib.Component
             return DisposeObjectHandler.Create(() => _singletonDictionary.Remove(type));
         }
         
-        public IDisposable RegisterMulti<T>(T instance) where T:class
+        public IDisposable RegisterMulti_<T>(T instance) where T:class
         {
             Type type = typeof(T);
             List<object> list;
@@ -54,7 +74,7 @@ namespace UnityGameLib.Component
             return DisposeObjectHandler.Create(() => list.Remove(instance));
         }
 
-        public bool GetSingleton<T>(out T instance) where T:class
+        public bool GetSingleton_<T>(out T instance) where T:class
         {
             Type type = typeof(T);
             if (_singletonDictionary.TryGetValue(type, out object value))
@@ -66,7 +86,7 @@ namespace UnityGameLib.Component
             return false;
         }
         
-        public bool GetAll<T>(out ReadOnlyCollection<T> instance) where T:class
+        public bool GetAll_<T>(out ReadOnlyCollection<T> instance) where T:class
         {
             Type type = typeof(T);
             if (_multiDictionary.TryGetValue(type, out List<object> value))
@@ -77,6 +97,8 @@ namespace UnityGameLib.Component
             instance = null;
             return false;
         }
+        
+        
         
         
     }

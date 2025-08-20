@@ -28,30 +28,30 @@ namespace UnityGameLib.Component
         [Test]
         public void TestSingletonService()
         {
-            DIService.Instance.RegisterSingleton(new Service2("Service2"));
-            using (DIService.Instance.RegisterSingleton(new Service1("Service1")))
+            DIService.RegisterSingleton(new Service2("Service2"));
+            using (DIService.RegisterSingleton(new Service1("Service1")))
             {
-                DIService.Instance.GetSingleton<Service1>(out var service1);
-                DIService.Instance.GetSingleton<Service2>(out var service2);
+                DIService.GetSingleton<Service1>(out var service1);
+                DIService.GetSingleton<Service2>(out var service2);
                 Assert.AreEqual("Service1",service1.service);
                 Assert.AreEqual("Service2",service2.service);
             }
-            Assert.IsFalse(DIService.Instance.GetSingleton<Service1>(out var service1_out));
+            Assert.IsFalse(DIService.GetSingleton<Service1>(out var service1_out));
             Assert.IsNull(service1_out);
         }
         
         [Test]
         public void TestPrototypeService()
         {
-            DIService.Instance.RegisterMulti(new Service1("Service2"));
-            using (DIService.Instance.RegisterMulti(new Service1("Service1")))
+            DIService.RegisterMulti(new Service1("Service2"));
+            using (DIService.RegisterMulti(new Service1("Service1")))
             {
-                Assert.IsTrue(DIService.Instance.GetAll<Service1>(out var services));
+                Assert.IsTrue(DIService.GetAll<Service1>(out var services));
                 Assert.AreEqual(2,services.Count);
                 Assert.AreEqual("Service2",services[0].service);
                 Assert.AreEqual("Service1",services[1].service);
             }
-            Assert.IsTrue(DIService.Instance.GetAll<Service1>(out var services2));
+            Assert.IsTrue(DIService.GetAll<Service1>(out var services2));
             Assert.AreEqual(1,services2.Count);
             Assert.AreEqual("Service2",services2[0].service);
         }
