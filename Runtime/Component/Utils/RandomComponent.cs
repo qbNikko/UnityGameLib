@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
@@ -8,7 +9,8 @@ namespace UnityGameLib.Component.Utils
     public class RandomComponent :MonoBehaviour
     {
         Random _random;
-        private void Awake()
+
+        public RandomComponent()
         {
             _random = new Random((uint)DateTimeOffset.Now.ToUnixTimeMilliseconds());
         }
@@ -24,6 +26,34 @@ namespace UnityGameLib.Component.Utils
         }
 
         public ref Random Random => ref _random;
+        
+        
+        public Vector2 GetRandomPositionOnCircle(
+            float maxRadius = 1f,
+            float minRadius = 0f,
+            float minY = float.MinValue
+        )
+        {
+            float a = NextFloat() * 2 * Mathf.PI;
+            float r = ((maxRadius-minRadius) * Mathf.Sqrt(NextFloat()))+minRadius;
+            return new Vector2((r * Mathf.Cos(a)), MathF.Max(minY,r * Mathf.Sin(a)));
+        }
+        public Vector2 GetRandomPositionOnRectangle(Rect rect)
+        {
+            return NextFloat2(rect.min,rect.max);
+        }
+        
+        public T GetRandomElement<T>(List<T> elements)
+        {
+            return elements[NextInt(0, elements.Count-1)];
+        }
+        
+        public T GetRandomEnum<T>() where T : Enum
+        {
+            Array values = Enum.GetValues(typeof(T));
+            return (T)values.GetValue(NextInt(0, values.Length-1));
+        }
+        
         
         public bool NextBool()
         {
