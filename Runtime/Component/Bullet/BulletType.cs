@@ -8,6 +8,6 @@ namespace UnityGameLib.Component.Bullet
         public BulletComponent _prefab;
         public float Speed;
         public float LifeTime;
-        public float Damage;
+        public int Damage;
     }
 }
