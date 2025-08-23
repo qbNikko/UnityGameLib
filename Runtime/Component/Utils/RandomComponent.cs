@@ -43,6 +43,11 @@ namespace UnityGameLib.Component.Utils
             return NextFloat2(rect.min,rect.max);
         }
         
+        public Vector3 GetRandomPositionOnBounds(Bounds bounds)
+        {
+            return NextFloat3(bounds.min,bounds.max);
+        }
+        
         public T GetRandomElement<T>(List<T> elements)
         {
             return elements[NextInt(0, elements.Count-1)];
