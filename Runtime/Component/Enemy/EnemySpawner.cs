@@ -39,40 +39,40 @@ namespace UnityGameLib.Component.Enemy
             return _lifeEnemy.Count;
         }
         
-        public bool TryFindEnemy(Func<Enemy, bool> predicate, ref List<Enemy2D> enemies)
+        public bool TryFindEnemy(Func<Enemy, bool> predicate, ref List<Enemy> enemies)
         {
             enemies.Clear();
-            foreach (Enemy2D enemy in _lifeEnemy)
+            foreach (Enemy enemy in _lifeEnemy)
             {
                 if(predicate.Invoke(enemy)) enemies.Add(enemy);
             }
             return enemies.Count>0;
         }
         
-        public bool TryFindEnemy(Vector3 position, ref List<Enemy2D> enemies)
+        public bool TryFindEnemy(Vector3 position, ref List<Enemy> enemies)
         {
             enemies.Clear();
-            foreach (Enemy2D enemy in _lifeEnemy)
+            foreach (Enemy enemy in _lifeEnemy)
             {
                 if(enemy.BoundsObject.IsBounds(position)) enemies.Add(enemy);
             }
             return enemies.Count>0;
         }
         
-        public bool TryFindEnemy(Collider2D collider, ref List<Enemy2D> enemies)
+        public bool TryFindEnemy(Collider2D collider, ref List<Enemy> enemies)
         {
             enemies.Clear();
-            foreach (Enemy2D enemy in _lifeEnemy)
+            foreach (Enemy enemy in _lifeEnemy)
             {
                 if(enemy.BoundsObject.IsBounds(collider)) enemies.Add(enemy);
             }
             return enemies.Count>0;
         }
         
-        public bool TryFindEnemy(Ray ray, ref List<Enemy2D> enemies)
+        public bool TryFindEnemy(Ray ray, ref List<Enemy> enemies)
         {
             enemies.Clear();
-            foreach (Enemy2D enemy in _lifeEnemy)
+            foreach (Enemy enemy in _lifeEnemy)
             {
                 if(enemy.BoundsObject.IsBounds(ray)) enemies.Add(enemy);
             }
