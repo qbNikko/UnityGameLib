@@ -19,11 +19,21 @@ namespace UnityGameLib.FSM
     
     public abstract class State : IState
     {
+        private string _name;
         private StateMachine _stateMachine;
+        
+        public State()
+        {
+            _name = GetType().Name;
+        }
+        public State(string name)
+        {
+            _name = name;
+        }
 
         public string Name()
         {
-            throw new System.NotImplementedException();
+            return _name;
         }
 
         StateMachine IState.StateMachine

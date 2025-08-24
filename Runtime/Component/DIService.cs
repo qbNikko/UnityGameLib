@@ -81,6 +81,7 @@ namespace UnityGameLib.Component
             if (!_namedDictionary.TryGetValue(type, out namedDictionary))
             {
                 _disposableContainer.AddDisposable(CollectionPool.GetDictionary(out namedDictionary));
+                _namedDictionary.Add(type,namedDictionary);
             }
             if (namedDictionary.ContainsKey(name)) throw new Exception("Object "+type+":"+name+" already registered");
             namedDictionary.Add(name, instance);
