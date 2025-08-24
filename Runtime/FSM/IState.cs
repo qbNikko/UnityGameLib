@@ -16,4 +16,20 @@ namespace UnityGameLib.FSM
         public void FixedUpdate() {}
         void HandleEvent(string eventName) {}
     }
+    
+    public abstract class State : IState
+    {
+        private StateMachine _stateMachine;
+
+        public string Name()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        StateMachine IState.StateMachine
+        {
+            get => _stateMachine;
+            set => _stateMachine = value;
+        }
+    }
 }
