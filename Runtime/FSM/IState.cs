@@ -1,11 +1,13 @@
-﻿namespace UnityGameLib.FSM
+﻿using System.Collections.Generic;
+
+namespace UnityGameLib.FSM
 {
     public interface IState
     {
         public string Name();
         public StateMachine StateMachine { get; internal set; }
 
-        public void Enter() {}
+        public void Enter(Dictionary<string,object> parameters = null) {}
         
         public void Exit() {}
         

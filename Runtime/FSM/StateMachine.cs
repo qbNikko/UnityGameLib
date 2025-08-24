@@ -5,17 +5,22 @@ using UnityGameLib.Component.Utils;
 
 namespace UnityGameLib.FSM
 {
-    public class StateMachine
+    public class StateMachine : IDisposable
     {
-        private Dictionary<string, IState> _statesDictionary;
-        private Dictionary<Type, IState> _statesTypeDictionary;
-        private DisposeContainer  _disposableContainer;
+        private static IState emptyState =  new EmptyState();
+        private readonly Dictionary<string, IState> _statesDictionary;
+        private readonly Dictionary<Type, IState> _statesTypeDictionary;
+        private readonly DisposeContainer  _disposableContainer;
+        private readonly Dictionary<IFsmTrigger, FsmTriggerAction> _triggers;
         private IState _currentState;
-
+        
         public StateMachine()
         {
+            _disposableContainer = new DisposeContainer();
+            _disposableContainer.AddDisposable(CollectionPool.GetDictionary(out _statesDictionary));
             _disposableContainer.AddDisposable(CollectionPool.GetDictionary(out _statesTypeDictionary));
-            _disposableContainer.AddDisposable(CollectionPool.GetDictionary(out _statesTypeDictionary));
+            _disposableContainer.AddDisposable(CollectionPool.GetDictionary(out _triggers));
+            _currentState = emptyState;
         }
 
         public StateMachine RegisterState(IState state)
@@ -26,39 +31,68 @@ namespace UnityGameLib.FSM
             return this;
         }
         
-        public void SwitchState(Type state)
+        public StateMachine RegisterTrigger(IFsmTrigger fsmTrigger, Type state)
         {
-            if (_statesTypeDictionary.TryGetValue(state, out var newState))
+            if(_triggers.ContainsKey(fsmTrigger)) throw new AggregateException("Trigger already exists");
+            FsmTriggerAction action = () => SwitchState(state);
+            fsmTrigger.AddListener(action);
+            _triggers.Add(fsmTrigger, action);
+            return this;
+        }
+        public StateMachine UnregisterTrigger(IFsmTrigger fsmTrigger)
+        {
+            if (_triggers.TryGetValue(fsmTrigger, out FsmTriggerAction action))
             {
-                _currentState?.Exit();
+                fsmTrigger.RemoveListener(action);
+                _triggers.Remove(fsmTrigger);
+            }
+            return this;
+        }
+        
+        public void SwitchState(Type state, Dictionary<string,object> parameters = null)
+        {
+            if (state!=null && _statesTypeDictionary.TryGetValue(state, out var newState))
+            {
+                _currentState.Exit();
                 _currentState = newState;
-                _currentState.Enter();
+                _currentState.Enter(parameters);
             }
         }
         
-        public void SwitchState(string state)
+        public void SwitchState(string state, Dictionary<string,object> parameters = null)
         {
-            if (_statesDictionary.TryGetValue(state, out var newState))
+            if (state!=null && _statesDictionary.TryGetValue(state, out var newState))
             {
-                _currentState?.Exit();
+                _currentState.Exit();
                 _currentState = newState;
-                _currentState.Enter();
+                _currentState.Enter(parameters);
             }
         }
 
         public void HandleEvent(string eventName)
         {
-            _currentState?.HandleEvent(eventName);
+            _currentState.HandleEvent(eventName);
         }
 
         public void Update()
         {
-            _currentState?.Update();
+            _currentState.Update();
         }
 
         public void FixedUpdate()
         {
-            _currentState?.FixedUpdate();
+            _currentState.FixedUpdate();
+        }
+
+        public void Dispose()
+        {
+            foreach (var fsmTriggerAction in _triggers)
+            {
+                fsmTriggerAction.Key.RemoveListener(fsmTriggerAction.Value);
+            }
+            _triggers.Clear();
+            _statesTypeDictionary.Clear();
+            _statesDictionary.Clear();
         }
     }
 }
