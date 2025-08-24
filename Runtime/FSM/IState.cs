@@ -31,5 +31,25 @@ namespace UnityGameLib.FSM
             get => _stateMachine;
             set => _stateMachine = value;
         }
+
+        public virtual void Enter(Dictionary<string, object> parameters = null)
+        {
+        }
+
+        public virtual void Exit()
+        {
+        }
+
+        public virtual void Update()
+        {
+        }
+
+        public virtual void FixedUpdate()
+        {
+        }
+
+        public virtual void HandleEvent(string eventName)
+        {
+        }
     }
 }
